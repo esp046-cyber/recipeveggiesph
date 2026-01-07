@@ -1,0 +1,1763 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Filipino Veggie Recipes</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #2d5016 0%, #4a7c2c 100%);
+            min-height: 100vh;
+            padding: 1%;
+        }
+        
+        .container {
+            max-width: 100%;
+            margin: 0 auto;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #68a83f 0%, #4a7c2c 100%);
+            padding: 15px 1%;
+            border-radius: 12px;
+            margin-bottom: 1%;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+        
+        h1 {
+            color: #fff;
+            font-size: 18px;
+            text-align: center;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .subtitle {
+            color: #e8f5e1;
+            font-size: 11px;
+            text-align: center;
+            margin-top: 5px;
+        }
+        
+        .filter-tabs {
+            display: flex;
+            gap: 1%;
+            margin-bottom: 1%;
+            overflow-x: auto;
+            padding: 5px 1%;
+        }
+        
+        .filter-btn {
+            background: #fff;
+            border: 2px solid #68a83f;
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 12px;
+            white-space: nowrap;
+            transition: all 0.3s;
+            color: #2d5016;
+            font-weight: 500;
+        }
+        
+        .filter-btn:hover, .filter-btn.active {
+            background: #68a83f;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        
+        .recipes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1%;
+            padding: 1%;
+        }
+        
+        .recipe-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+        }
+        
+        .recipe-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        
+        .recipe-header {
+            background: linear-gradient(135deg, #68a83f 0%, #4a7c2c 100%);
+            padding: 15px 1%;
+            color: white;
+        }
+        
+        .recipe-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .recipe-type {
+            font-size: 10px;
+            opacity: 0.9;
+            background: rgba(255,255,255,0.2);
+            padding: 3px 8px;
+            border-radius: 10px;
+            display: inline-block;
+        }
+        
+        .recipe-content {
+            padding: 15px 1%;
+        }
+        
+        .ingredients, .instructions {
+            margin-bottom: 12px;
+        }
+        
+        .section-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #2d5016;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .section-title::before {
+            content: '🥬';
+            margin-right: 5px;
+        }
+        
+        .ingredients ul, .instructions ol {
+            padding-left: 20px;
+            font-size: 12px;
+            line-height: 1.6;
+            color: #333;
+        }
+        
+        .ingredients li, .instructions li {
+            margin-bottom: 5px;
+        }
+        
+        .cook-time {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            color: #666;
+            padding-top: 10px;
+            border-top: 1px solid #e0e0e0;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+            overflow-y: auto;
+            padding: 1%;
+        }
+        
+        .modal-content {
+            background: white;
+            max-width: 600px;
+            margin: 20px auto;
+            border-radius: 15px;
+            position: relative;
+        }
+        
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 28px;
+            color: white;
+            cursor: pointer;
+            z-index: 10;
+            background: rgba(0,0,0,0.3);
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+        
+        .close-btn:hover {
+            background: rgba(0,0,0,0.6);
+            transform: rotate(90deg);
+        }
+
+        .emoji-icon {
+            font-size: 40px;
+            text-align: center;
+            margin: 10px 0;
+        }
+
+        @media (max-width: 480px) {
+            .recipes-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 16px;
+            }
+            
+            .filter-btn {
+                font-size: 11px;
+                padding: 6px 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🥬 Filipino Vegetable Recipes 2026</h1>
+            <div class="subtitle">Masarap at Nutritious na Gulay!</div>
+        </header>
+        
+        <div class="filter-tabs">
+            <button class="filter-btn active" onclick="filterRecipes('all')">All Recipes</button>
+            <button class="filter-btn" onclick="filterRecipes('main')">Main Dishes</button>
+            <button class="filter-btn" onclick="filterRecipes('soup')">Soups</button>
+            <button class="filter-btn" onclick="filterRecipes('side')">Side Dishes</button>
+            <button class="filter-btn" onclick="filterRecipes('salad')">Salads</button>
+        </div>
+        
+        <div class="recipes-grid" id="recipesGrid"></div>
+    </div>
+    
+    <div class="modal" id="recipeModal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal()">&times;</span>
+            <div id="modalBody"></div>
+        </div>
+    </div>
+
+    <script>
+        const recipes = [
+            {
+                id: 1,
+                title: "Pinakbet",
+                type: "main",
+                icon: "🍆",
+                prepTime: "15 min",
+                cookTime: "25 min",
+                servings: "4-6",
+                ingredients: [
+                    "2 cups kalabasa (squash), cubed",
+                    "1 cup talong (eggplant), sliced",
+                    "1 cup sitaw (string beans)",
+                    "1 cup okra",
+                    "2 tomatoes, quartered",
+                    "1 onion, sliced",
+                    "4 cloves garlic, minced",
+                    "3 tbsp bagoong alamang",
+                    "2 cups water",
+                    "2 tbsp cooking oil"
+                ],
+                instructions: [
+                    "Heat oil in a pan and sauté garlic, onion, and tomatoes",
+                    "Add bagoong alamang and cook for 2 minutes",
+                    "Add kalabasa and water, bring to boil",
+                    "Add sitaw and cook for 5 minutes",
+                    "Add talong and okra, cook until tender",
+                    "Simmer until vegetables are cooked but not mushy",
+                    "Serve hot with steamed rice"
+                ]
+            },
+            {
+                id: 2,
+                title: "Laing (Ginataang Gabi)",
+                type: "main",
+                icon: "🌿",
+                prepTime: "10 min",
+                cookTime: "30 min",
+                servings: "4",
+                ingredients: [
+                    "2 cups dried taro leaves (gabi leaves)",
+                    "2 cups coconut milk",
+                    "1 cup coconut cream",
+                    "5 cloves garlic, minced",
+                    "1 onion, chopped",
+                    "2 pcs siling labuyo (bird's eye chili)",
+                    "2 tbsp bagoong alamang",
+                    "2 tbsp cooking oil",
+                    "Salt and pepper to taste"
+                ],
+                instructions: [
+                    "Sauté garlic and onion in oil until fragrant",
+                    "Add bagoong alamang and chili peppers",
+                    "Add taro leaves and mix well",
+                    "Pour coconut milk and bring to boil",
+                    "Simmer for 20 minutes, stirring occasionally",
+                    "Add coconut cream and cook for 5 more minutes",
+                    "Season with salt and pepper",
+                    "Serve with steamed rice"
+                ]
+            },
+            {
+                id: 3,
+                title: "Ginisang Ampalaya",
+                type: "side",
+                icon: "🥒",
+                prepTime: "10 min",
+                cookTime: "10 min",
+                servings: "4",
+                ingredients: [
+                    "2 medium ampalaya (bitter gourd), sliced",
+                    "2 eggs, beaten",
+                    "3 cloves garlic, minced",
+                    "1 onion, sliced",
+                    "2 tomatoes, diced",
+                    "2 tbsp cooking oil",
+                    "Salt to taste",
+                    "1 tbsp fish sauce (patis)"
+                ],
+                instructions: [
+                    "Remove seeds from ampalaya and slice thinly",
+                    "Rub with salt and let stand for 10 minutes, then rinse",
+                    "Heat oil and sauté garlic, onion, and tomatoes",
+                    "Add ampalaya slices and stir-fry for 3 minutes",
+                    "Season with fish sauce",
+                    "Pour beaten eggs over the vegetables",
+                    "Cook until eggs are set",
+                    "Serve immediately"
+                ]
+            },
+            {
+                id: 4,
+                title: "Chopsuey",
+                type: "main",
+                icon: "🥦",
+                prepTime: "20 min",
+                cookTime: "15 min",
+                servings: "6",
+                ingredients: [
+                    "1 cup cauliflower florets",
+                    "1 cup broccoli florets",
+                    "1 cup carrots, sliced",
+                    "1 cup cabbage, chopped",
+                    "1 cup sayote (chayote), sliced",
+                    "1 cup snow peas",
+                    "1 cup baby corn",
+                    "4 cloves garlic, minced",
+                    "1 onion, sliced",
+                    "2 cups vegetable broth",
+                    "3 tbsp soy sauce",
+                    "2 tbsp cornstarch",
+                    "3 tbsp cooking oil"
+                ],
+                instructions: [
+                    "Heat oil and sauté garlic and onion",
+                    "Add carrots and sayote, cook for 3 minutes",
+                    "Add cauliflower, broccoli, and baby corn",
+                    "Pour vegetable broth and soy sauce",
+                    "Add cabbage and snow peas",
+                    "Mix cornstarch with water and add to thicken",
+                    "Cook until vegetables are tender-crisp",
+                    "Serve hot with rice"
+                ]
+            },
+            {
+                id: 5,
+                title: "Sinigang na Gulay",
+                type: "soup",
+                icon: "🍲",
+                prepTime: "15 min",
+                cookTime: "20 min",
+                servings: "4-6",
+                ingredients: [
+                    "2 cups kangkong (water spinach)",
+                    "1 cup sitaw (string beans)",
+                    "1 cup talong (eggplant), sliced",
+                    "1 cup labanos (radish), sliced",
+                    "2 tomatoes, quartered",
+                    "1 onion, quartered",
+                    "3 pcs siling pansigang (green chili)",
+                    "1 pack sinigang mix (tamarind)",
+                    "6 cups water",
+                    "2 tbsp fish sauce (patis)"
+                ],
+                instructions: [
+                    "Boil water in a pot",
+                    "Add onion, tomatoes, and radish",
+                    "Cook for 5 minutes",
+                    "Add sinigang mix and stir well",
+                    "Add talong and sitaw, cook for 5 minutes",
+                    "Add fish sauce and green chili",
+                    "Add kangkong last and turn off heat",
+                    "Let sit for 2 minutes before serving"
+                ]
+            },
+            {
+                id: 6,
+                title: "Ensaladang Talong",
+                type: "salad",
+                icon: "🍆",
+                prepTime: "15 min",
+                cookTime: "10 min",
+                servings: "4",
+                ingredients: [
+                    "4 large eggplants",
+                    "2 tomatoes, diced",
+                    "1 onion, chopped",
+                    "3 tbsp fish sauce (patis)",
+                    "2 tbsp vinegar",
+                    "Salt and pepper to taste",
+                    "1 tbsp calamansi juice"
+                ],
+                instructions: [
+                    "Grill eggplants until skin is charred",
+                    "Let cool, then peel off skin",
+                    "Mash eggplant flesh with fork",
+                    "Mix with tomatoes and onion",
+                    "Add fish sauce, vinegar, and calamansi",
+                    "Season with salt and pepper",
+                    "Chill before serving",
+                    "Best served cold as side dish"
+                ]
+            },
+            {
+                id: 7,
+                title: "Ginataang Kalabasa",
+                type: "main",
+                icon: "🎃",
+                prepTime: "10 min",
+                cookTime: "20 min",
+                servings: "4",
+                ingredients: [
+                    "3 cups kalabasa (squash), cubed",
+                    "1 cup sitaw (string beans)",
+                    "2 cups coconut milk",
+                    "3 cloves garlic, minced",
+                    "1 onion, sliced",
+                    "2 tbsp bagoong alamang",
+                    "2 cups water",
+                    "Salt to taste"
+                ],
+                instructions: [
+                    "Sauté garlic and onion until fragrant",
+                    "Add bagoong alamang and cook for 1 minute",
+                    "Add kalabasa and water",
+                    "Bring to boil and simmer for 10 minutes",
+                    "Add coconut milk and sitaw",
+                    "Cook until vegetables are tender",
+                    "Season with salt if needed",
+                    "Serve hot with rice"
+                ]
+            },
+            {
+                id: 8,
+                title: "Tortang Talong",
+                type: "main",
+                icon: "🍳",
+                prepTime: "15 min",
+                cookTime: "15 min",
+                servings: "4",
+                ingredients: [
+                    "4 large eggplants",
+                    "4 eggs, beaten",
+                    "3 cloves garlic, minced",
+                    "1 onion, chopped",
+                    "1 tomato, diced",
+                    "Salt and pepper to taste",
+                    "Cooking oil for frying"
+                ],
+                instructions: [
+                    "Grill eggplants until soft, peel skin",
+                    "Flatten eggplant with fork, keep stem intact",
+                    "Mix eggs with garlic, onion, tomato",
+                    "Season with salt and pepper",
+                    "Dip each eggplant in egg mixture",
+                    "Fry in hot oil until golden brown",
+                    "Flip and cook other side",
+                    "Serve with ketchup or vinegar dip"
+                ]
+            },
+            {
+                id: 9,
+                title: "Monggo Guisado",
+                type: "soup",
+                icon: "🫘",
+                prepTime: "10 min",
+                cookTime: "40 min",
+                servings: "6",
+                ingredients: [
+                    "2 cups mung beans, soaked",
+                    "2 cups spinach or ampalaya leaves",
+                    "3 cloves garlic, minced",
+                    "1 onion, chopped",
+                    "2 tomatoes, diced",
+                    "2 tbsp fish sauce (patis)",
+                    "6 cups water",
+                    "2 tbsp cooking oil"
+                ],
+                instructions: [
+                    "Boil mung beans in water for 30 minutes",
+                    "Mash some beans for thicker consistency",
+                    "In separate pan, sauté garlic, onion, tomatoes",
+                    "Add sautéed mixture to boiled beans",
+                    "Add fish sauce and simmer for 5 minutes",
+                    "Add leafy vegetables",
+                    "Cook for 2 more minutes",
+                    "Serve hot with rice"
+                ]
+            },
+            {
+                id: 10,
+                title: "Atchara (Pickled Papaya)",
+                type: "salad",
+                icon: "🥗",
+                prepTime: "30 min",
+                cookTime: "10 min",
+                servings: "8",
+                ingredients: [
+                    "4 cups green papaya, julienned",
+                    "1 cup carrots, julienned",
+                    "1 red bell pepper, julienned",
+                    "1 cup white vinegar",
+                    "1 cup sugar",
+                    "1 cup water",
+                    "5 cloves garlic, minced",
+                    "1 tbsp salt",
+                    "1 tsp peppercorns"
+                ],
+                instructions: [
+                    "Sprinkle salt on papaya, let sit 30 minutes",
+                    "Rinse and squeeze out excess water",
+                    "Combine vinegar, sugar, water in pot",
+                    "Add garlic and peppercorns, boil",
+                    "Let pickling liquid cool completely",
+                    "Mix papaya, carrots, and bell pepper",
+                    "Pour cooled liquid over vegetables",
+                    "Store in jar, refrigerate overnight before serving"
+                ]
+            },
+            {
+                id: 11,
+                title: "Dinengdeng",
+                type: "soup",
+                icon: "🥣",
+                prepTime: "10 min",
+                cookTime: "15 min",
+                servings: "4",
+                ingredients: [
+                    "2 cups kalabasa (squash), cubed",
+                    "1 cup okra",
+                    "1 cup sitaw (string beans)",
+                    "1 cup saluyot leaves",
+                    "2 tomatoes, quartered",
+                    "1 onion, sliced",
+                    "3 tbsp bagoong isda",
+                    "4 cups water"
+                ],
+                instructions: [
+                    "Boil water with bagoong isda",
+                    "Add tomatoes and onion, simmer 5 minutes",
+                    "Add kalabasa and cook until soft",
+                    "Add sitaw and okra",
+                    "Cook for 5 minutes",
+                    "Add saluyot leaves last",
+                    "Turn off heat and let sit 2 minutes",
+                    "Serve with steamed rice"
+                ]
+            },
+            {
+                id: 12,
+                title: "Ukoy (Vegetable Fritters)",
+                type: "side",
+                icon: "🥞",
+                prepTime: "20 min",
+                cookTime: "20 min",
+                servings: "6",
+                ingredients: [
+                    "2 cups grated kalabasa (squash)",
+                    "1 cup bean sprouts",
+                    "1/2 cup carrots, julienned",
+                    "1 cup all-purpose flour",
+                    "1/2 cup cornstarch",
+                    "2 eggs",
+                    "1 cup water",
+                    "Salt and pepper to taste",
+                    "Oil for deep frying"
+                ],
+                instructions: [
+                    "Mix flour, cornstarch, eggs, and water",
+                    "Season with salt and pepper",
+                    "Add all vegetables to batter",
+                    "Mix well to coat vegetables",
+                    "Heat oil in deep pan",
+                    "Scoop portions and fry until golden",
+                    "Drain on paper towels",
+                    "Serve with vinegar dipping sauce"
+                ]
+            },
+            {
+                id: 13,
+                title: "Adobong Kangkong",
+                type: "side",
+                icon: "🌱",
+                prepTime: "5 min",
+                cookTime: "10 min",
+                servings: "4",
+                ingredients: [
+                    "4 cups kangkong (water spinach)",
+                    "5 cloves garlic, minced",
+                    "1 onion, sliced",
+                    "3 tbsp soy sauce",
+                    "2 tbsp vinegar",
+                    "1/2 tsp ground pepper",
+                    "2 tbsp cooking oil",
+                    "1 cup water"
+                ],
+                instructions: [
+                    "Heat oil and sauté garlic until golden",
+                    "Add onion and cook until soft",
+                    "Pour soy sauce, vinegar, and water",
+                    "Add pepper and bring to boil",
+                    "Add kangkong stems first, cook 2 minutes",
+                    "Add kangkong leaves",
+                    "Cook for another 2 minutes",
+                    "Serve immediately with rice"
+                ]
+            },
+            {
+                id: 14,
+                title: "Ginisang Upo",
+                type: "side",
+                icon: "🥒",
+                prepTime: "10 min",
+                cookTime: "15 min",
+                servings: "4",
+                ingredients: [
+                    "2 medium upo (bottle gourd), sliced",
+                    "4 cloves garlic, minced",
+                    "1 onion, chopped",
+                    "2 tomatoes, diced",
+                    "2 eggs, beaten",
+                    "2 tbsp fish sauce (patis)",
+                    "1 cup water",
+                    "2 tbsp cooking oil"
+                ],
+                instructions: [
+                    "Sauté garlic, onion, and tomatoes",
+                    "Add upo slices and mix well",
+                    "Pour water and fish sauce",
+                    "Cover and simmer until upo is tender",
+                    "Push vegetables to side of pan",
+                    "Pour eggs and let it set slightly",
+                    "Mix everything together",
+                    "Serve hot"
+                ]
+            },
+            {
+                id: 15,
+                title: "Ginataang Sitaw at Kalabasa",
+                type: "main",
+                icon: "🥥",
+                prepTime: "10 min",
+                cookTime: "20 min",
+                servings: "4-6",
+                ingredients: [
+                    "2 cups kalabasa, cubed",
+                    "2 cups sitaw, cut into 2-inch pieces",
+                    "2 cups coconut milk",
+                    "1 cup coconut cream",
+                    "4 cloves garlic, minced",
+                    "1 onion, sliced",
+                    "2 tbsp bagoong alamang",
+                    "2 pcs siling labuyo",
+                    "Salt to taste"
+                ],
+                instructions: [
+                    "Sauté garlic and onion until aromatic",
+                    "Add bagoong and chili peppers",
+                    "Add kalabasa and stir",
+                    "Pour coconut milk and bring to boil",
+                    "Simmer for 10 minutes",
+                    "Add sitaw and cook 5 minutes",
+                    "Add coconut cream",
+                    "Season with salt and serve"
+                ]
+            },
+            {
+                id: 16,
+                title: "Lumpiang Gulay (Fresh Spring Rolls)",
+                type: "side",
+                icon: "🌯",
+                prepTime: "30 min",
+                cookTime: "15 min",
+                servings: "6-8",
+                ingredients: [
+                    "12 pcs lumpia wrappers",
+                    "2 cups cabbage, julienned",
+                    "1 cup carrots, julienned",
+                    "1 cup bean sprouts",
+                    "1 cup jicama (singkamas), julienned",
+                    "4 cloves garlic, minced",
+                    "2 tbsp soy sauce",
+                    "Lettuce leaves",
+                    "Peanut sauce for serving"
+                ],
+                instructions: [
+                    "Sauté garlic until golden",
+                    "Add all vegetables and stir-fry",
+                    "Season with soy sauce",
+                    "Cook until vegetables are tender-crisp",
+                    "Let filling cool completely",
+                    "Place lettuce on wrapper",
+                    "Add vegetable filling and wrap tightly",
+                    "Serve with peanut sauce"
+                ]
+            },
+            {
+                id: 17,
+                title: "Bulanglang",
+                type: "soup",
+                icon: "🍜",
+                prepTime: "15 min",
+                cookTime: "20 min",
+                servings: "4-6",
+                ingredients: [
+                    "2 cups kalabasa, cubed",
+                    "1 cup sitaw, cut",
+                    "1 cup okra",
+                    "1 cup saluyot leaves",
+                    "2 tomatoes, quartered",
+                    "1 onion, sliced",
+                    "3 tbsp bagoong isda",
+                    "2 pcs siling haba",
+                    "6 cups water"
+                ],
+                instructions: [
+                    "Boil water with bagoong",
+                    "Add tomatoes and onion",
+                    "Add kalabasa and cook until soft",
+                    "Add sitaw and okra",
+                    "Add green chilies",
+                    "Cook for 5 minutes",
+                    "Add saluyot leaves last",
+                    "Serve with steamed rice"
+                ]
+            },
+            {
+                id: 18,
+                title: "Ensaladang Pipino",
+                type: "salad",
+                icon: "🥗",
+                prepTime: "15 min",
+                cookTime: "0 min",
+                servings: "4",
+                ingredients: [
+                    "3 medium cucumbers, sliced",
+                    "2 tomatoes, diced",
+                    "1 onion, sliced thin",
+                    "3 tbsp vinegar",
+                    "1 tbsp fish sauce",
+                    "1 tsp sugar",
+                    "Salt and pepper to taste",
+                    "1 tbsp calamansi juice"
+                ],
+                instructions: [
+                    "Slice cucumbers thinly",
+                    "Dice tomatoes and slice onion",
+                    "Combine all vegetables in bowl",
+                    "Mix vinegar, fish sauce, sugar",
+                    "Add calamansi juice",
+                    "Pour dressing over vegetables",
+                    "Toss well to combine",
+                    "Chill for 10 minutes before serving"
+                ]
+            },
+            {
+                id: 19,
+                title: "Ginisang Repolyo",
+                type: "side",
+                icon: "🥬",
+                prepTime: "10 min",
+                cookTime: "10 min",
+                servings: "4",
+                ingredients: [
+                    "1 small cabbage, shredded",
+                    "1 carrot, julienned",
+                    "4 cloves garlic, minced",
+                    "1 onion, sliced",
+                    "2 tbsp soy sauce",
+                    "1 tbsp oyster sauce",
+                    "2 tbsp cooking oil",
+                    "Salt and pepper to taste"
+                ],
+                instructions: [
+                    "Heat oil in pan or wok",
+                    "Sauté garlic and onion",
+                    "Add carrots and cook for 2 minutes",
+                    "Add cabbage and stir-fry",
+                    "Add soy sauce and oyster sauce",
+                    "Cook for 3-5 minutes until tender-crisp",
+                    "Season with salt and pepper",
+                    "Serve hot"
+                ]
+            },
+            {
+                id: 20,
+                title: "Paksiw na Gulay",
+                type: "main",
+                icon: "🥘",
+                prepTime: "10 min",
+                cookTime: "20 min",
+                servings: "4",
+                ingredients: [
+                    "2 cups talong, sliced",
+                    "1 cup okra",
+                    "1 cup kalabasa, cubed",
+                    "1 cup sitaw",
+                    "3 cloves garlic, crushed",
+                    "1 onion, sliced",
+                    "3 tbsp vinegar",
+                    "2 tbsp bagoong alamang",
+                    "2 cups water",
+                    "2 pcs siling haba"
+                ],
+                instructions: [
+                    "In pot, combine water and vinegar",
+                    "Add garlic, onion, and bagoong",
+                    "Bring to boil without stirring",
+                    "Add kalabasa and cook 5 minutes",
+                    "Add talong and okra",
+                    "Add sitaw and green chilies",
+                    "Simmer until vegetables are tender",
+                    "Serve with rice"
+                ]
+            },
+            {
+                id: 21,
+                title: "Ginisang Togue",
+                type: "side",
+                icon: "🌾",
+                prepTime: "5 min",
+                cookTime: "8 min",
+                servings: "4",
+                ingredients: [
+                    "4 cups bean sprouts (togue)",
+                    "1 carrot, julienned",
+                    "4 cloves garlic, minced",
+                    "1 onion, sliced",
+                    "2 tbsp soy sauce",
+                    "1 tbsp oyster sauce",
+                    "2 tbsp cooking oil",
+                    "Salt and pepper to taste"
+                ],
+                instructions: [
+                    "Heat oil in wok or large pan",
+                    "Sauté garlic until golden",
+                    "Add onion and cook until soft",
+                    "Add carrots, stir-fry for 2 minutes",
+                    "Add bean sprouts and toss quickly",
+                    "Add soy sauce and oyster sauce",
+                    "Cook for 2-3 minutes, keeping it crunchy",
+                    "Season and serve immediately"
+                ]
+            },
+            {
+                id: 22,
+                title: "Laswa",
+                type: "soup",
+                icon: "🥣",
+                prepTime: "10 min",
+                cookTime: "15 min",
+                servings: "4-6",
+                ingredients: [
+                    "2 cups kalabasa, cubed",
+                    "1 cup sitaw, cut",
+                    "1 cup okra",
+                    "1 cup alugbati leaves",
+                    "2 tomatoes, quartered",
+                    "1 onion, sliced",
+                    "2 tbsp bagoong",
+                    "4 cups water",
+                    "2 pcs siling haba"
+                ],
+                instructions: [
+                    "Boil water with bagoong",
+                    "Add onion and tomatoes",
+                    "Add kalabasa, cook until soft",
+                    "Add sitaw and okra",
+                    "Add green chilies",
+                    "Simmer for 5 minutes",
+                    "Add alugbati leaves last",
+                    "Turn off heat and serve"
+                ]
+            },
+            {
+                id: 23,
+                title: "Ginataang Langka",
+                type: "main",
+                icon: "🍈",
+                prepTime: "15 min",
+                cookTime: "30 min",
+                servings: "6",
+                ingredients: [
+                    "3 cups young jackfruit (langka), cubed",
+                    "2 cups coconut milk",
+                    "1 cup coconut cream",
+                    "4 cloves garlic, minced",
+                    "1 onion, chopped",
+                    "2 tbsp bagoong alamang",
+                    "2 pcs siling labuyo",
+                    "2 cups water",
+                    "Salt to taste"
+                ],
+                instructions: [
+                    "Sauté garlic and onion",
+                    "Add bagoong and chili peppers",
+                    "Add jackfruit and water",
+                    "Boil until jackfruit is tender (20 min)",
+                    "Pour coconut milk",
+                    "Simmer for 5 minutes",
+                    "Add coconut cream",
+                    "Season with salt and serve"
+                ]
+            },
+            {
+                id: 24,
+                title: "Ensaladang Pako",
+                type: "salad",
+                icon: "🌿",
+                prepTime: "15 min",
+                cookTime: "0 min",
+                servings: "4",
+                ingredients: [
+                    "2 cups pako (fiddlehead fern)",
+                    "2 tomatoes, diced",
+                    "1 onion, sliced thin",
+                    "1 salted egg, sliced",
+                    "3 tbsp vinegar",
+                    "1 tbsp fish sauce",
+                    "2 tbsp calamansi juice",
+                    "Salt and pepper to taste"
+                ],
+                instructions: [
+                    "Clean pako thoroughly",
+                    "Blanch pako in boiling water for 1 minute",
+                    "Drain and let cool",
+                    "Arrange pako on serving plate",
+                    "Top with tomatoes, onion, and salted egg",
+                    "Mix vinegar, fish sauce, and calamansi",
+                    "Pour dressing over salad",
+                    "Serve immediately"
+                ]
+            },
+            {
+                id: 25,
+                title: "Ginataang Gabi",
+                type: "main",
+                icon: "🍠",
+                prepTime: "15 min",
+                cookTime: "30 min",
+                servings: "4-6",
+                ingredients: [
+                    "3 cups gabi (taro root), cubed",
+                    "2 cups coconut milk",
+                    "1 cup coconat cream",
+                    "4 cloves garlic, minced",
+                    "1 onion, sliced",
+                    "2 tbsp bagoong alamang",
+                    "2 pcs siling labuyo",
+                    "2 cups water",
+                    "Salt to taste"
+                ],
+                instructions: [
+                    "Boil gabi in water until half-cooked",
+                    "In separate pan, sauté garlic and onion",
+                    "Add bagoong and chili peppers",
+                    "Add boiled gabi with cooking water",
+                    "Pour coconut milk and simmer 15 minutes",
+                    "Add coconut cream",
+                    "Cook until gabi is tender",
+                    "Season with salt and serve"
+                ]
+            },
+            {
+                id: 26,
+                title: "Ginisang Sayote",
+                type: "side",
+                icon: "🥒",
+                prepTime: "10 min",
+                cookTime: "12 min",
+                servings: "4",
+                ingredients: [
+                    "3 medium sayote (chayote), julienned",
+                    "4 cloves garlic, minced",
+                    "1 onion, sliced",
+                    "2 tomatoes, diced",
+                    "2 eggs, beaten",
+                    "2 tbsp soy sauce",
+                    "2 tbsp cooking oil",
+                    "Salt and pepper to taste"
+                ],
+                instructions: [
+                    "Heat oil and sauté garlic, onion, tomatoes",
+                    "Add sayote and stir-fry for 5 minutes",
+                    "Add soy sauce and mix well",
+                    "Cook until sayote is tender-crisp",
+                    "Push vegetables to the side",
+                    "Pour beaten eggs and scramble",
+                    "Mix everything together",
+                    "Season and serve hot"
+                ]
+            },
+            {
+                id: 27,
+                title: "Kinilaw na Labanos",
+                type: "salad",
+                icon: "🥕",
+                prepTime: "20 min",
+                cookTime: "0 min",
+                servings: "4",
+                ingredients: [
+                    "2 cups labanos (radish), julienned",
+                    "1 carrot, julienned",
+                    "1/4 cup vinegar",
+                    "2 tbsp sugar",
+                    "1 tsp salt",
+                    "1 onion, sliced thin",
+                    "2 pcs siling labuyo, sliced",
+                    "1 tbsp ginger, julienned"
+                ],
+                instructions: [
+                    "Julienne labanos and carrot thinly",
+                    "Sprinkle with salt and let sit 10 minutes",
+                    "Squeeze out excess water",
+                    "Mix vinegar and sugar until dissolved",
+                    "Add onion, chili, and ginger",
+                    "Pour over vegetables and toss",
+                    "Refrigerate for at least 30 minutes",
+                    "Serve cold as side dish"
+                ]
+            },
+            {
+                id: 28,
+                title: "Sigarilyas Guisado",
+                type: "side",
+                icon: "🫛",
+                prepTime: "10 min",
+                cookTime: "15 min",
+                servings: "4",
+                ingredients: [
+                    "3 cups sigarilyas (winged beans), sliced",
+                    "4 cloves garlic, minced",
+                    "1 onion, chopped",
+                    "2 tomatoes, diced",
+                    "2 tbsp soy sauce",
+                    "1 tbsp oyster sauce",
+                    "1 cup water",
+                    "2 tbsp cooking oil"
+                ],
+                instructions: [
+                    "Heat oil and sauté garlic and onion",
+                    "Add tomatoes and cook until soft",
+                    "Add sigarilyas and stir-fry",
+                    "Pour water and bring to boil",
+                    "Add soy sauce and oyster sauce",
+                    "Simmer until beans are tender",
+                    "Season to taste",
+                    "Serve with rice"
+                ]
+            },
+            {
+                id: 29,
+                title: "Utan Bisaya",
+                type: "soup",
+                icon: "🥘",
+                prepTime: "15 min",
+                cookTime: "20 min",
+                servings: "6",
+                ingredients: [
+                    "2 cups kalabasa, cubed",
+                    "1 cup sitaw, cut",
+                    "1 cup okra",
+                    "1 cup malunggay leaves",
+                    "2 tomatoes, quartered",
+                    "1 onion, sliced",
+                    "2 tbsp bagoong isda",
+                    "2 pcs siling haba",
+                    "6 cups water"
+                ],
+                instructions: [
+                    "Boil water with bagoong",
+                    "Add onion and tomatoes, simmer 5 minutes",
+                    "Add kalabasa and cook until soft",
+                    "Add sitaw and okra",
+                    "Add green chilies",
+                    "Cook for 5 minutes",
+                    "Add malunggay leaves last",
+                    "Turn off heat and serve"
+                ]
+            },
+            {
+                id: 30,
+                title: "Ginisang Patola",
+                type: "side",
+                icon: "🥒",
+                prepTime: "10 min",
+                cookTime: "12 min",
+                servings: "4",
+                ingredients: [
+                    "3 medium patola (sponge gourd), sliced",
+                    "4 cloves garlic, minced",
+                    "1 onion, sliced",
+                    "2 tomatoes, diced",
+                    "2 eggs, beaten",
+                    "2 tbsp fish sauce",
+                    "1 cup water",
+                    "2 tbsp cooking oil"
+                ],
+                instructions: [
+                    "Sauté garlic, onion, and tomatoes",
+                    "Add patola slices and stir",
+                    "Pour water and fish sauce",
+                    "Cover and simmer until patola is tender",
+                    "Push vegetables aside",
+                    "Pour beaten eggs and let set",
+                    "Mix everything together",
+                    "Serve immediately"
+                ]
+            },
+            {
+                id: 31,
+                title: "Ginataang Puso ng Saging",
+                type: "main",
+                icon: "🌺",
+                prepTime: "20 min",
+                cookTime: "30 min",
+                servings: "4-6",
+                ingredients: [
+                    "2 puso ng saging (banana hearts), sliced",
+                    "2 cups coconut milk",
+                    "1 cup coconut cream",
+                    "4 cloves garlic, minced",
+                    "1 onion, chopped",
+                    "2 tbsp bagoong alamang",
+                    "2 pcs siling labuyo",
+                    "2 cups water"
+                ],
+                instructions: [
+                    "Slice banana heart thinly, soak in salted water",
+                    "Drain and squeeze out liquid",
+                    "Sauté garlic, onion, and bagoong",
+                    "Add banana heart and water",
+                    "Boil for 15 minutes",
+                    "Pour coconut milk, add chili",
+                    "Simmer for 10 minutes",
+                    "Add coconut cream and serve"
+                ]
+            },
+            {
+                id: 32,
+                title: "Ensaladang Talong at Itlog",
+                type: "salad",
+                icon: "🥚",
+                prepTime: "20 min",
+                cookTime: "15 min",
+                servings: "4",
+                ingredients: [
+                    "4 large eggplants",
+                    "2 salted eggs, chopped",
+                    "2 tomatoes, diced",
+                    "1 onion, chopped",
+                    "3 tbsp vinegar",
+                    "2 tbsp fish sauce",
+                    "Salt and pepper to taste"
+                ],
+                instructions: [
+                    "Grill eggplants until charred",
+                    "Peel skin and mash flesh",
+                    "Boil salted eggs and chop",
+                    "Mix eggplant with salted eggs",
+                    "Add tomatoes and onion",
+                    "Mix vinegar and fish sauce",
+                    "Pour over eggplant mixture",
+                    "Chill and serve"
+                ]
+            },
+            {
+                id: 33,
+                title: "Ginisang Pechay",
+                type: "side",
+                icon: "🥬",
+                prepTime: "5 min",
+                cookTime: "8 min",
+                servings: "4",
+                ingredients: [
+                    "1 bundle pechay (bok choy), chopped",
+                    "4 cloves garlic, minced",
+                    "1 onion, sliced",
+                    "2 tbsp oyster sauce",
+                    "1 tbsp soy sauce",
+                    "1/2 cup water",
+                    "2 tbsp cooking oil",
+                    "Salt and pepper to taste"
+                ],
+                instructions: [
+                    "Separate pechay stems and leaves",
+                    "Heat oil and sauté garlic and onion",
+                    "Add pechay stems first, stir-fry 2 minutes",
+                    "Add water, oyster sauce, and soy sauce",
+                    "Add pechay leaves",
+                    "Cook for 2 more minutes",
+                    "Season to taste",
+                    "Serve immediately while crisp"
+                ]
+            },
+            {
+                id: 34,
+                title: "Kilawing Kamatis",
+                type: "salad",
+                icon: "🍅",
+                prepTime: "10 min",
+                cookTime: "0 min",
+                servings: "4",
+                ingredients: [
+                    "4 large ripe tomatoes, diced",
+                    "1 onion, chopped fine",
+                    "2 pcs siling labuyo, minced",
+                    "3 tbsp vinegar",
+                    "1 tbsp fish sauce",
+                    "1 tbsp bagoong alamang",
+                    "Salt and pepper to taste"
+                ],
+                instructions: [
+                    "Dice tomatoes into small cubes",
+                    "Finely chop onion and chili",
+                    "Combine all vegetables in bowl",
+                    "Add vinegar and fish sauce",
+                    "Add bagoong alamang",
+                    "Mix well and season",
+                    "Let sit for 5 minutes",
+                    "Serve as appetizer or side dish"
+                ]
+            },
+            {
+                id: 35,
+                title: "Ginataang Labong",
+                type: "main",
+                icon: "🎋",
+                prepTime: "15 min",
+                cookTime: "35 min",
+                servings: "6",
+                ingredients: [
+                    "3 cups bamboo shoots (labong), sliced",
+                    "2 cups coconut milk",
+                    "1 cup coconut cream",
+                    "4 cloves garlic, minced",
+                    "1 onion, chopped",
+                    "2 tbsp bagoong alamang",
+                    "2 pcs siling labuyo",
+                    "3 cups water"
+                ],
+                instructions: [
+                    "Boil bamboo shoots in water for 20 minutes",
+                    "Drain and set aside",
+                    "Sauté garlic, onion, and bagoong",
+                    "Add bamboo shoots and stir",
+                    "Pour coconut milk and bring to boil",
+                    "Add chili peppers and simmer 10 minutes",
+                    "Add coconut cream",
+                    "Cook 5 more minutes and serve"
+                ]
+            },
+            {
+                id: 36,
+                title: "Adobong Sitaw",
+                type: "side",
+                icon: "🫘",
+                prepTime: "5 min",
+                cookTime: "15 min",
+                servings: "4",
+                ingredients: [
+                    "3 cups sitaw (string beans), cut into 2-inch pieces",
+                    "5 cloves garlic, minced",
+                    "1 onion, sliced",
+                    "3 tbsp soy sauce",
+                    "2 tbsp vinegar",
+                    "1 tsp ground black pepper",
+                    "1 cup water",
+                    "2 tbsp cooking oil"
+                ],
+                instructions: [
+                    "Heat oil and sauté garlic until golden",
+                    "Add onion and cook until soft",
+                    "Add sitaw and stir-fry for 2 minutes",
+                    "Pour soy sauce, vinegar, and water",
+                    "Add black pepper",
+                    "Bring to boil then simmer",
+                    "Cook until beans are tender",
+                    "Serve hot with rice"
+                ]
+            },
+            {
+                id: 37,
+                title: "Ensaladang Talong with Bagoong",
+                type: "salad",
+                icon: "🍆",
+                prepTime: "15 min",
+                cookTime: "10 min",
+                servings: "4",
+                ingredients: [
+                    "4 large eggplants, grilled",
+                    "2 tomatoes, diced",
+                    "1 onion, chopped",
+                    "2 tbsp bagoong alamang",
+                    "2 tbsp vinegar",
+                    "1 tbsp calamansi juice",
+                    "2 pcs siling labuyo, chopped"
+                ],
+                instructions: [
+                    "Grill eggplants until skin is charred",
+                    "Peel and mash eggplant flesh",
+                    "Add tomatoes and onion",
+                    "Mix bagoong, vinegar, and calamansi",
+                    "Pour dressing over eggplant",
+                    "Add chopped chili",
+                    "Mix well and adjust seasoning",
+                    "Serve immediately"
+                ]
+            },
+            {
+                id: 38,
+                title: "Ginisang Mustasa",
+                type: "side",
+                icon: "🥬",
+                prepTime: "5 min",
+                cookTime: "10 min",
+                servings: "4",
+                ingredients: [
+                    "1 bundle mustasa (mustard greens)",
+                    "4 cloves garlic, minced",
+                    "1 onion, sliced",
+                    "2 tomatoes, diced",
+                    "2 tbsp oyster sauce",
+                    "1/2 cup water",
+                    "2 tbsp cooking oil",
+                    "Salt and pepper to taste"
+                ],
+                instructions: [
+                    "Wash and chop mustasa",
+                    "Sauté garlic, onion, and tomatoes",
+                    "Add mustasa stems first",
+                    "Pour water and oyster sauce",
+                    "Add mustasa leaves",
+                    "Cook for 3-5 minutes",
+                    "Season to taste",
+                    "Serve hot"
+                ]
+            },
+            {
+                id: 39,
+                title: "Binagoongang Talong",
+                type: "main",
+                icon: "🍆",
+                prepTime: "10 min",
+                cookTime: "15 min",
+                servings: "4",
+                ingredients: [
+                    "6 medium eggplants, sliced",
+                    "3 tbsp bagoong alamang",
+                    "4 cloves garlic, minced",
+                    "1 onion, sliced",
+                    "2 tomatoes, diced",
+                    "1 tbsp vinegar",
+                    "1 tbsp sugar",
+                    "3 tbsp cooking oil"
+                ],
+                instructions: [
+                    "Heat oil in pan",
+                    "Fry eggplant slices until golden brown",
+                    "Remove and set aside",
+                    "Sauté garlic, onion, and tomatoes",
+                    "Add bagoong and stir",
+                    "Add vinegar and sugar",
+                    "Return eggplant to pan",
+                    "Mix gently and serve"
+                ]
+            },
+            {
+                id: 40,
+                title: "Ginataang Alugbati",
+                type: "side",
+                icon: "🌿",
+                prepTime: "5 min",
+                cookTime: "10 min",
+                servings: "4",
+                ingredients: [
+                    "3 cups alugbati (Malabar spinach)",
+                    "1 cup coconut milk",
+                    "4 cloves garlic, minced",
+                    "1 onion, sliced",
+                    "2 pcs siling labuyo",
+                    "1 tbsp bagoong alamang",
+                    "2 tbsp cooking oil"
+                ],
+                instructions: [
+                    "Sauté garlic and onion",
+                    "Add bagoong and chili",
+                    "Add alugbati and stir",
+                    "Pour coconut milk",
+                    "Bring to boil",
+                    "Simmer for 5 minutes",
+                    "Season if needed",
+                    "Serve with rice"
+                ]
+            },
+            {
+                id: 41,
+                title: "Law-uy",
+                type: "soup",
+                icon: "🥣",
+                prepTime: "10 min",
+                cookTime: "15 min",
+                servings: "4",
+                ingredients: [
+                    "2 cups sweet potato tops (talbos ng kamote)",
+                    "1 cup kalabasa, cubed",
+                    "2 tomatoes, quartered",
+                    "1 onion, sliced",
+                    "2 tbsp bagoong isda",
+                    "2 pcs siling haba",
+                    "5 cups water"
+                ],
+                instructions: [
+                    "Boil water with bagoong",
+                    "Add onion and tomatoes",
+                    "Add kalabasa and cook until soft",
+                    "Add green chilies",
+                    "Add sweet potato tops",
+                    "Cook for 3 minutes",
+                    "Turn off heat",
+                    "Serve hot with rice"
+                ]
+            },
+            {
+                id: 42,
+                title: "Pinakupsan",
+                type: "soup",
+                icon: "🍲",
+                prepTime: "15 min",
+                cookTime: "20 min",
+                servings: "6",
+                ingredients: [
+                    "2 cups kalabasa, cubed",
+                    "1 cup okra, sliced",
+                    "1 cup sitaw, cut",
+                    "1 cup malunggay leaves",
+                    "2 tomatoes, quartered",
+                    "1 onion, sliced",
+                    "3 tbsp bagoong alamang",
+                    "6 cups water"
+                ],
+                instructions: [
+                    "Boil water with bagoong",
+                    "Add tomatoes and onion",
+                    "Add kalabasa and cook 10 minutes",
+                    "Add okra and sitaw",
+                    "Simmer for 5 minutes",
+                    "Add malunggay leaves",
+                    "Turn off heat and let sit",
+                    "Serve immediately"
+                ]
+            },
+            {
+                id: 43,
+                title: "Ginisang Ampalaya with Eggs",
+                type: "main",
+                icon: "🥒",
+                prepTime: "15 min",
+                cookTime: "12 min",
+                servings: "4",
+                ingredients: [
+                    "2 medium ampalaya, sliced thin",
+                    "3 eggs, beaten",
+                    "4 cloves garlic, minced",
+                    "1 onion, sliced",
+                    "2 tomatoes, diced",
+                    "2 tbsp fish sauce",
+                    "2 tbsp cooking oil",
+                    "Salt to taste"
+                ],
+                instructions: [
+                    "Rub ampalaya with salt, rinse after 10 min",
+                    "Sauté garlic, onion, and tomatoes",
+                    "Add ampalaya and stir-fry",
+                    "Add fish sauce and cook 5 minutes",
+                    "Pour beaten eggs over vegetables",
+                    "Let eggs set slightly",
+                    "Mix and scramble with vegetables",
+                    "Serve hot"
+                ]
+            },
+            {
+                id: 44,
+                title: "Tortang Giniling na Gulay",
+                type: "main",
+                icon: "🥞",
+                prepTime: "15 min",
+                cookTime: "20 min",
+                servings: "4",
+                ingredients: [
+                    "2 cups mixed vegetables (carrots, peas, corn)",
+                    "2 potatoes, diced small",
+                    "4 eggs, beaten",
+                    "4 cloves garlic, minced",
+                    "1 onion, chopped",
+                    "2 tbsp soy sauce",
+                    "Salt and pepper to taste",
+                    "Oil for frying"
+                ],
+                instructions: [
+                    "Sauté garlic and onion",
+                    "Add vegetables and cook until tender",
+                    "Season with soy sauce, salt, pepper",
+                    "Let cool completely",
+                    "Mix vegetables with beaten eggs",
+                    "Heat oil in pan",
+                    "Scoop portions and fry until golden",
+                    "Serve with banana ketchup"
+                ]
+            },
+            {
+                id: 45,
+                title: "Ensaladang Singkamas",
+                type: "salad",
+                icon: "🥗",
+                prepTime: "15 min",
+                cookTime: "0 min",
+                servings: "4",
+                ingredients: [
+                    "2 cups singkamas (jicama), julienned",
+                    "1 cucumber, julienned",
+                    "1 carrot, julienned",
+                    "2 tomatoes, diced",
+                    "1 onion, sliced thin",
+                    "3 tbsp vinegar",
+                    "1 tbsp sugar",
+                    "Salt and pepper to taste"
+                ],
+                instructions: [
+                    "Peel and julienne singkamas thinly",
+                    "Julienne cucumber and carrot",
+                    "Dice tomatoes and slice onion",
+                    "Mix vinegar, sugar, salt, pepper",
+                    "Combine all vegetables",
+                    "Pour dressing and toss well",
+                    "Refrigerate for 15 minutes",
+                    "Serve chilled"
+                ]
+            },
+            {
+                id: 46,
+                title: "Ginataang Talong",
+                type: "main",
+                icon: "🍆",
+                prepTime: "10 min",
+                cookTime: "20 min",
+                servings: "4",
+                ingredients: [
+                    "4 large eggplants, sliced",
+                    "2 cups coconut milk",
+                    "4 cloves garlic, minced",
+                    "1 onion, sliced",
+                    "2 tbsp bagoong alamang",
+                    "2 pcs siling labuyo",
+                    "Salt to taste",
+                    "2 tbsp cooking oil"
+                ],
+                instructions: [
+                    "Sauté garlic and onion in oil",
+                    "Add bagoong and chili peppers",
+                    "Add eggplant slices",
+                    "Pour coconut milk",
+                    "Bring to boil",
+                    "Simmer for 15 minutes",
+                    "Season with salt",
+                    "Serve with steamed rice"
+                ]
+            },
+            {
+                id: 47,
+                title: "Tinolang Gulay",
+                type: "soup",
+                icon: "🍜",
+                prepTime: "10 min",
+                cookTime: "20 min",
+                servings: "4-6",
+                ingredients: [
+                    "2 cups sayote, sliced",
+                    "2 cups malunggay leaves",
+                    "1 cup green papaya, sliced",
+                    "4 cloves garlic, crushed",
+                    "1 onion, sliced",
+                    "1 thumb ginger, sliced",
+                    "2 tbsp fish sauce",
+                    "6 cups water",
+                    "2 tbsp cooking oil"
+                ],
+                instructions: [
+                    "Sauté garlic, onion, and ginger",
+                    "Add water and bring to boil",
+                    "Add fish sauce",
+                    "Add papaya and cook 5 minutes",
+                    "Add sayote and cook until tender",
+                    "Add malunggay leaves",
+                    "Turn off heat",
+                    "Serve hot"
+                ]
+            },
+            {
+                id: 48,
+                title: "Lumpiang Sariwa",
+                type: "main",
+                icon: "🌯",
+                prepTime: "30 min",
+                cookTime: "15 min",
+                servings: "8",
+                ingredients: [
+                    "12 lumpia wrappers",
+                    "2 cups cabbage, shredded",
+                    "1 cup carrots, julienned",
+                    "1 cup singkamas, julienned",
+                    "1 cup bean sprouts",
+                    "4 cloves garlic, minced",
+                    "2 tbsp soy sauce",
+                    "Lettuce leaves",
+                    "Sweet peanut sauce"
+                ],
+                instructions: [
+                    "Sauté garlic until fragrant",
+                    "Add all vegetables and stir-fry",
+                    "Season with soy sauce",
+                    "Cook until tender-crisp",
+                    "Let filling cool",
+                    "Place lettuce on wrapper",
+                    "Add vegetable filling and wrap",
+                    "Serve with peanut sauce"
+                ]
+            }
+        ];
+
+        function renderRecipes(filteredRecipes) {
+            const grid = document.getElementById('recipesGrid');
+            grid.innerHTML = '';
+            
+            filteredRecipes.forEach(recipe => {
+                const card = document.createElement('div');
+                card.className = 'recipe-card';
+                card.onclick = () => openModal(recipe);
+                
+                card.innerHTML = `
+                    <div class="recipe-header">
+                        <div class="emoji-icon">${recipe.icon}</div>
+                        <div class="recipe-title">${recipe.title}</div>
+                        <span class="recipe-type">${recipe.type}</span>
+                    </div>
+                    <div class="recipe-content">
+                        <div class="ingredients">
+                            <div class="section-title">Ingredients</div>
+                            <ul>
+                                ${recipe.ingredients.slice(0, 4).map(ing => `<li>${ing}</li>`).join('')}
+                                ${recipe.ingredients.length > 4 ? `<li><em>+ ${recipe.ingredients.length - 4} more...</em></li>` : ''}
+                            </ul>
+                        </div>
+                        <div class="cook-time">
+                            <span>⏱️ ${recipe.prepTime + ' + ' + recipe.cookTime}</span>
+                            <span>🍽️ ${recipe.servings}</span>
+                        </div>
+                    </div>
+                `;
+                
+                grid.appendChild(card);
+            });
+        }
+
+        function filterRecipes(type) {
+            const buttons = document.querySelectorAll('.filter-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            const filtered = type === 'all' ? recipes : recipes.filter(r => r.type === type);
+            renderRecipes(filtered);
+        }
+
+        function openModal(recipe) {
+            const modal = document.getElementById('recipeModal');
+            const modalBody = document.getElementById('modalBody');
+            
+            modalBody.innerHTML = `
+                <div class="recipe-header">
+                    <div class="emoji-icon">${recipe.icon}</div>
+                    <div class="recipe-title" style="font-size: 20px;">${recipe.title}</div>
+                    <span class="recipe-type">${recipe.type}</span>
+                </div>
+                <div class="recipe-content">
+                    <div style="display: flex; justify-content: space-around; padding: 10px; background: #f5f5f5; border-radius: 8px; margin-bottom: 15px;">
+                        <div style="text-align: center;">
+                            <div style="font-size: 11px; color: #666;">Prep Time</div>
+                            <div style="font-weight: 600; color: #2d5016;">${recipe.prepTime}</div>
+                        </div>
+                        <div style="text-align: center;">
+                            <div style="font-size: 11px; color: #666;">Cook Time</div>
+                            <div style="font-weight: 600; color: #2d5016;">${recipe.cookTime}</div>
+                        </div>
+                        <div style="text-align: center;">
+                            <div style="font-size: 11px; color: #666;">Servings</div>
+                            <div style="font-weight: 600; color: #2d5016;">${recipe.servings}</div>
+                        </div>
+                    </div>
+                    <div class="ingredients">
+                        <div class="section-title">Ingredients</div>
+                        <ul>
+                            ${recipe.ingredients.map(ing => `<li>${ing}</li>`).join('')}
+                        </ul>
+                    </div>
+                    <div class="instructions">
+                        <div class="section-title">Instructions</div>
+                        <ol>
+                            ${recipe.instructions.map(inst => `<li>${inst}</li>`).join('')}
+                        </ol>
+                    </div>
+                </div>
+            `;
+            
+            modal.style.display = 'block';
+        }
+
+        function closeModal() {
+            document.getElementById('recipeModal').style.display = 'none';
+        }
+
+        window.onclick = function(event) {
+            const modal = document.getElementById('recipeModal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        }
+
+        // Initial render
+        renderRecipes(recipes);
+    </script>
+</body>
+</html>
